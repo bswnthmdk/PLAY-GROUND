@@ -248,49 +248,6 @@ git checkout typescript
 
 ---
 
-# Verify Current Branch
-
-Check which branch you're working in:
-
-```bash
-git branch
-```
-
-Current branch will show:
-
-```
-* nextjs
-```
-
-Always confirm before making changes.
-
----
-
-# Recommended Commit Message Format
-
-Use meaningful commit messages.
-
-Good examples:
-
-```bash
-NextJS: add middleware authentication
-GenAI: add prompt testing script
-TypeScript: implement utility types
-WebSocket: add chat broadcast logic
-```
-
-Avoid:
-
-```bash
-update
-fix
-changes
-```
-
-Those become useless later.
-
----
-
 # Folder Description Guide
 
 Use these folder purposes consistently.
