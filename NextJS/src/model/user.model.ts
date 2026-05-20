@@ -1,4 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
+
+// Defining the TypeScript type
 export interface Message extends Document {
   content: string;
   createdAt: Date;
@@ -46,7 +48,7 @@ const UserSchema: Schema<User> = new Schema({
   verifyCode: { type: String, required: [true, "verifyCode is required"] },
   verifyCodeExp: { type: Date, required: [true, "verifyCodeExp is required"] },
   isAccepted: { type: Boolean, default: true },
-  messages: [MessageSchema],
+  messages: [MessageSchema], // Each user document contains an array of message subdocuments.
 });
 
 const UserModel =
