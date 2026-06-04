@@ -1,0 +1,23 @@
+body {
+  font-family: Arial;
+  background: #f5f5f5;
+  padding: 2rem;
+}
+
+h1 {
+  text-align: center;
+}
+
+#usersContainer {
+  max-width: 700px;
+  margin: auto;
+}
+
+.card {
+  background: white;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  border-left: 5px solid coral;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}

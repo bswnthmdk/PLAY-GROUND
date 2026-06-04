@@ -6,45 +6,53 @@
     <link rel="stylesheet" href="./style.css" type="text/css" />
     <title>Home Page</title>
   </head>
+
   <body>
-    <h1>Hi student, Welcome to XYZ University!</h1>
+    <div class="container">
+      <h1>Hi student, Welcome to XYZ University!</h1>
 
-    <p>
-      You can sign up to the platform to access all important notes & lectures.
-    </p>
+      <p>
+        You can sign up to the platform to access all important notes &
+        lectures.
+      </p>
 
-    <form action="/addUser" method="POST">
-      <div class="field">
-        <label>Email:</label>
+      <form action="/addUser" method="POST">
+        <div class="field">
+          <label>Email:</label>
 
-        <input
-          type="email"
-          placeholder="jane@email.com"
-          name="email"
-          required
-        />
-      </div>
+          <input
+            type="email"
+            placeholder="jane@email.com"
+            name="email"
+            required
+          />
+        </div>
 
-      <div class="field">
-        <label>Username:</label>
+        <div class="field">
+          <label>Username:</label>
 
-        <input type="text" placeholder="Jane Doe" name="username" required />
-      </div>
+          <input type="text" placeholder="Jane Doe" name="username" required />
+        </div>
 
-      <div class="field">
-        <label>Password:</label>
+        <div class="field">
+          <label>Password:</label>
 
-        <input
-          type="password"
-          placeholder="password"
-          name="password"
-          required
-        />
-      </div>
+          <input
+            type="password"
+            placeholder="password"
+            name="password"
+            required
+          />
+        </div>
 
-      <button id="formBtn">Create Account</button>
-    </form>
+        <div class="btnGroup">
+          <button type="submit" id="formBtn">Add User</button>
 
-    <script src="./script.js"></script>
+          <a href="/users.html" target="_blank">
+            <button type="button" id="getBtn">Get Existing Users</button>
+          </a>
+        </div>
+      </form>
+    </div>
   </body>
 </html>
