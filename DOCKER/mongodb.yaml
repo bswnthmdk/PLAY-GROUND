@@ -9,6 +9,9 @@ services:
       MONGO_INITDB_ROOT_USERNAME: biswanath
       MONGO_INITDB_ROOT_PASSWORD: password
 
+    volumes:
+      - "D:/PROGRAMMING/PLAY GROUND/DOCKER/docker volume:/data/db"
+
   mongo-express:
     image: mongo-express
 
