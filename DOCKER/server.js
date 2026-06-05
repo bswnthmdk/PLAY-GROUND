@@ -1,4 +1,7 @@
 import express from "express";
+import dotenv from "dotenv";
+
+dotenv.config();
 import { MongoClient } from "mongodb";
 import path from "path";
 
@@ -9,7 +12,7 @@ const PORT = 5000;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-const MONGO_URL = "mongodb://biswanath:password@localhost:27017";
+const MONGO_URL = `mongodb://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PWD}@mongo:27017`;
 
 const client = new MongoClient(MONGO_URL);
 
