@@ -13,7 +13,7 @@ async function getGroqChatCompletion() {
       },
       {
         role: "user",
-        content: "who killed Ayatollah Ali Khamenei?",
+        content: "Who is Modi?",
       },
     ],
     model: "openai/gpt-oss-120b",
