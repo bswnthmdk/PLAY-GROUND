@@ -5,6 +5,8 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 async function getGroqChatCompletion() {
   return groq.chat.completions.create({
+    model: "openai/gpt-oss-120b",
+    temperature: 0,
     messages: [
       {
         role: "system",
@@ -16,7 +18,6 @@ async function getGroqChatCompletion() {
         content: "What is the date of today?",
       },
     ],
-    model: "openai/gpt-oss-120b",
   });
 }
 

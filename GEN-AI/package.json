@@ -4,15 +4,19 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "dotenv": "^16.0.0",
     "groq-sdk": "^0.37.0",
-    "openai": "^6.24.0",
-    "dotenv": "^16.0.0"
+    "openai": "^6.24.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
