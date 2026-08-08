@@ -15,7 +15,7 @@ async function getGroqChatCompletion() {
       },
       {
         role: "user",
-        content: "What is the date of today?",
+        content: "What is the current temperature in Kokata?",
       },
     ],
   });
