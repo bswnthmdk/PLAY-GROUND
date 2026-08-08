@@ -13,7 +13,7 @@ async function getGroqChatCompletion() {
       },
       {
         role: "user",
-        content: "Who is Modi?",
+        content: "What is the date of today?",
       },
     ],
     model: "openai/gpt-oss-120b",
