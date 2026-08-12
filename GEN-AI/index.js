@@ -9,6 +9,7 @@ async function getGroqChatCompletion() {
     temperature: 0,
 
     tools: [
+      // array because I can define multiple tools
       {
         type: "function", // type of tool, can be "function" or "api"
         function: {
@@ -35,7 +36,9 @@ async function getGroqChatCompletion() {
         },
       },
     ],
+
     tool_choice: "auto", // "auto" -> the model will decide when to use the tool, "manual" -> the model will not use the tool unless explicitly instructed; "define" -> same as "manual" but the model will not use the tool unless explicitly instructed
+
     messages: [
       {
         role: "system",
@@ -44,7 +47,8 @@ async function getGroqChatCompletion() {
       },
       {
         role: "user",
-        content: "What is the current temperature in Kokata?",
+        content: "What is the current weather and temperature in Kolkata?",
+        // content: "Who is the first president of the United States?",
       },
     ],
   });
@@ -59,25 +63,31 @@ async function main() {
 
   console.log("raw assistant message:", JSON.stringify(message, null, 2));
 
-  if (message?.function_call) {
-    console.log("LLM chose tool:", message.function_call.name);
-    console.log(
-      "function_call:",
-      JSON.stringify(message.function_call, null, 2),
-    );
+  if (message?.tool_calls?.length) {
+    const toolCall = message.tool_calls[0];
 
-    if (message.function_call.name === "webSearch") {
-      const params = JSON.parse(message.function_call.arguments || "{}");
+    const functionName = toolCall.function.name;
+    const functionArgs = toolCall.function.arguments;
+
+    console.log("LLM chose tool:", functionName);
+    console.log("tool arguments:", functionArgs);
+
+    if (functionName === "webSearch") {
+      const params = JSON.parse(functionArgs || "{}");
+
       console.log("parsed tool params:", params);
-      const toolResult = webSearch({ params });
-      console.log("webSearch result:", toolResult);
+
+      const toolResult = webSearch(params);
+
+      console.log("Tool result:", toolResult);
     }
   } else {
     console.log("assistant text:", message?.content || "(empty)");
   }
 }
-main();
 
-function webSearch({ params }) {
+function webSearch(params) {
   return "webSearch function is called";
 }
+
+main();
