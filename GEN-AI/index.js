@@ -1,13 +1,14 @@
 import "dotenv/config";
 import Groq from "groq-sdk";
+import { tavily } from "@tavily/core";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY });
 
 async function getGroqChatCompletion() {
   return groq.chat.completions.create({
     model: "openai/gpt-oss-120b",
     temperature: 0,
-
     tools: [
       // array because I can define multiple tools
       {
@@ -22,16 +23,12 @@ async function getGroqChatCompletion() {
             type: "object",
             // properties are the actual query parameters that the tool accepts
             properties: {
-              location: {
+              query: {
                 type: "string",
-                description: "City and state, e.g. San Francisco, CA",
-              },
-              unit: {
-                type: "string",
-                enum: ["celsius", "fahrenheit"],
+                description: "The search query",
               },
             },
-            required: ["location"],
+            required: ["query"],
           },
         },
       },
@@ -77,7 +74,7 @@ async function main() {
 
       console.log("parsed tool params:", params);
 
-      const toolResult = webSearch(params);
+      const toolResult = await webSearch(params);
 
       console.log("Tool result:", toolResult);
     }
@@ -86,8 +83,10 @@ async function main() {
   }
 }
 
-function webSearch(params) {
-  return "webSearch function is called";
+async function webSearch(params) {
+  const response = await tvly.search(params.query);
+
+  return response;
 }
 
 main();
