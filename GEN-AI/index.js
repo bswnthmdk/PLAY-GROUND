@@ -1,9 +1,16 @@
 import "dotenv/config";
 import Groq from "groq-sdk";
+import readline from "readline/promises";
 
 import { tavilyWebSearch, calculator } from "./tools.js";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+  terminal: false,
+});
 
 async function firstGroqCall(
   model,
@@ -22,22 +29,18 @@ async function firstGroqCall(
   });
 }
 
-async function main() {
+async function chatBot(req) {
   const model = "openai/gpt-oss-120b";
   const temperature = 0;
-
   const systemMessage = {
     role: "system",
     content:
       "Behave as a helpful assistant. Answer concisely. Answer the user in simple plain text. Do not use Markdown, LaTeX, headings, or unnecessary explanations. Give only the final answer.",
   };
-
   const userMessage = {
     role: "user",
-    content:
-      "What is the current weather in Kolkata, India? Also calculate 15.75 × 48.6 and give the result",
+    content: req,
   };
-
   const tools = [
     {
       type: "function", // type of tool, can be "function" or "api"
@@ -91,7 +94,7 @@ async function main() {
     tools,
   );
 
-  let responseMessage = response.choices[0].message;
+  let responseMessage = response.choices[0].message; // Add 1st LLM response to conversation
 
   while (true) {
     // Add LLM response to conversation
@@ -99,8 +102,7 @@ async function main() {
 
     // No tool call → final answer
     if (!responseMessage.tool_calls?.length) {
-      console.log("Final Response:", responseMessage.content);
-      break;
+      return responseMessage.content;
     }
 
     // Execute all tool calls
@@ -111,10 +113,10 @@ async function main() {
       let toolResult;
 
       if (functionName === "tavilyWebSearch") {
-        console.log("Running toolcall: tavilyWebSearch");
+        console.log("Running toolcall: 'tavilyWebSearch'....");
         toolResult = await tavilyWebSearch(functionArgs);
       } else if (functionName === "calculator") {
-        console.log("Running toolcall: calculator");
+        console.log("Running toolcall: 'calculator'....");
         toolResult = calculator(functionArgs.expression);
       }
 
@@ -139,6 +141,23 @@ async function main() {
 
     responseMessage = response.choices[0].message;
   }
+}
+
+async function main() {
+  while (true) {
+    const req = await rl.question("You: ");
+
+    if (req.toLowerCase() === "exit") {
+      console.log("Exiting....");
+      break;
+    }
+
+    const res = await chatBot(req);
+
+    console.log("Bot: " + res);
+  }
+
+  rl.close();
 }
 
 main();
