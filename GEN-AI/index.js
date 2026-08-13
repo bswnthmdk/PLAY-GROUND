@@ -5,12 +5,7 @@ import { tavily } from "@tavily/core";
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY });
 
-async function getGroqChatCompletion(
-  model,
-  temperature,
-  systemMessage,
-  userMessage,
-) {
+async function firstGroqCall(model, temperature, systemMessage, userMessage) {
   return groq.chat.completions.create({
     model: model,
     temperature: temperature,
@@ -19,7 +14,7 @@ async function getGroqChatCompletion(
       {
         type: "function", // type of tool, can be "function" or "api"
         function: {
-          name: "webSearch",
+          name: "tavilyWebSearch",
           // more precise descriptions help the model understand the tool's purpose
           description:
             "Search the web for latest information and realtime data",
@@ -45,7 +40,7 @@ async function getGroqChatCompletion(
   });
 }
 
-async function webSearch(params) {
+async function tavilyWebSearch(params) {
   const response = await tvly.search(params.query);
   const finalResult = response.results
     .map((result) => result.content)
@@ -68,29 +63,34 @@ async function main() {
   };
 
   // 1. Get the initial response from the LLM
-  const chatCompletion = await getGroqChatCompletion(
+  const firstGroqResponse = await firstGroqCall(
     model,
     temperature,
     systemMessage,
     userMessage,
   );
 
-  const message = chatCompletion.choices?.[0]?.message;
+  const responseMessage = firstGroqResponse.choices?.[0]?.message;
 
-  if (message?.tool_calls?.length) {
-    const toolCall = message.tool_calls[0];
+  while (true) {
+    if (responseMessage?.tool_calls?.length) {
+      for (const tool_call of responseMessage.tool_calls) {
+        const functionName = tool_call.function.name;
+        const functionArgs = JSON.parse(tool_call.function.arguments || "{}");
 
-    const functionName = toolCall.function.name;
-    const functionArgs = toolCall.function.arguments;
+        if (functionName === "tavilyWebSearch") {
+          // 2. Execute the tool
+          const tavilyWebSearchResult = await tavilyWebSearch(functionArgs);
 
-    if (functionName === "webSearch") {
-      const params = JSON.parse(functionArgs || "{}");
+          responseMessage.push({
+            role: "tool",
+            tool_call_id: tool_call.id,
+            content: JSON.stringify(tavilyWebSearchResult),
+          });
+        }
+      }
 
-      // 2. Execute the tool
-      const toolResult = await webSearch(params);
-
-      // 2. Send tool result back to LLM
-      const finalResponse = await groq.chat.completions.create({
+      responseMessage = await groq.chat.completions.create({
         model: model,
         temperature: temperature,
 
@@ -100,22 +100,13 @@ async function main() {
           userMessage,
 
           // LLM's previous tool call
-          message,
-
-          // Tool's response
-          {
-            role: "tool",
-            tool_call_id: toolCall.id,
-            content: JSON.stringify(toolResult),
-          },
+          responseMessage,
         ],
       });
-
-      // 3. Get final simple answer
-      console.log("Final answer:", finalResponse.choices[0].message.content);
+    } else {
+      console.log("Final Response:", responseMessage?.content || "(empty)");
+      break;
     }
-  } else {
-    console.log("assistant text:", message?.content || "(empty)");
   }
 }
 
